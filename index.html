@@ -256,13 +256,36 @@ function showToast(msg,type='success'){
   setTimeout(()=>t.style.display='none',2800);
 }
 
-async function scriptCall(params){
-  const url=SCRIPT_URL+'?'+new URLSearchParams(params).toString();
-  const r=await fetch(url);
-  if(!r.ok) throw new Error('Erro de conexão');
-  const d=await r.json();
-  if(!d.ok) throw new Error(d.erro||'Erro desconhecido');
-  return d;
+function scriptCall(params){
+  return new Promise((resolve, reject) => {
+    const cbName = 'cb_' + Date.now();
+    const timeout = setTimeout(() => {
+      delete window[cbName];
+      const el = document.getElementById(cbName);
+      if (el) el.remove();
+      reject(new Error('Timeout'));
+    }, 15000);
+    window[cbName] = (data) => {
+      clearTimeout(timeout);
+      delete window[cbName];
+      const el = document.getElementById(cbName);
+      if (el) el.remove();
+      if (data.ok) resolve(data);
+      else reject(new Error(data.erro || 'Erro'));
+    };
+    params.callback = cbName;
+    const url = SCRIPT_URL + '?' + new URLSearchParams(params).toString();
+    const script = document.createElement('script');
+    script.id = cbName;
+    script.src = url;
+    script.onerror = () => {
+      clearTimeout(timeout);
+      delete window[cbName];
+      script.remove();
+      reject(new Error('Erro de rede'));
+    };
+    document.head.appendChild(script);
+  });
 }
 
 async function carregarDados(){
