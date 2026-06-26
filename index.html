@@ -686,8 +686,10 @@ function carregarCoresModelo(){
 async function toggleFavorita(id,val){
   const p=produtos.find(x=>x.id===id);if(!p)return;
   p.favorita=val;
-  await salvarProdutosSheet();
   showToast(val?'Marcada como favorita ⭐':'Favorita removida');
+  await salvarProdutosSheet();
+  await carregarDados();
+  carregarCoresModelo();
 }
 
 function adicionarCorExistente(){
