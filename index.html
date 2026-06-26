@@ -835,20 +835,35 @@ function imprimirEtiquetas(){
       const cid='bc-'+code.replace(/[^a-zA-Z0-9]/g,'-');
       const canvas=document.getElementById(cid);
       const bcImg=canvas?canvas.toDataURL():'';
-      etqs+=`<div class="etiqueta"><div class="nome">${p.nome}</div><div class="detalhe">${p.cor} · Nº ${n}</div>
+      etqs+=`<div class="etiqueta">
+        <div class="nome">${p.nome}</div>
+        <div class="detalhe">${p.cor} · Nº ${n}</div>
         <div class="preco">${fmtPreco(p.preco)}</div>
-        ${bcImg?`<img src="${bcImg}" style="width:100%;max-height:44px;margin:4px 0;" />`:''}
-        <div class="code">${code}</div></div>`;
+        ${bcImg?`<img src="${bcImg}" class="barcode" />`:''}
+        <div class="code">${code}</div>
+      </div>`;
     });
   });
   const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><title>Etiquetas</title><style>
-    body{font-family:Arial,sans-serif;margin:0;padding:12px;}
-    .etiqueta{border:1px solid #ccc;border-radius:3px;padding:8px 12px;margin:4px;width:200px;display:inline-block;vertical-align:top;page-break-inside:avoid;}
-    .nome{font-size:12px;font-weight:bold;}.detalhe{font-size:10px;color:#555;}.preco{font-size:16px;font-weight:bold;margin-top:3px;}.code{font-size:9px;color:#777;}
-    @media print{body{padding:0;}.etiqueta{margin:2px;}}
-  </style></head><body>${etqs}</body></html>`);
-  w.document.close();w.print();
+  w.document.write(`<!DOCTYPE html><html><head><title>Etiquetas Laranja Nanica</title><style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: white; }
+    .pagina { width: 210mm; margin: 0 auto; padding: 13mm 4.75mm; }
+    .grid { display: grid; grid-template-columns: repeat(3, 63.5mm); grid-template-rows: repeat(7, 38.1mm); gap: 0; }
+    .etiqueta { width: 63.5mm; height: 38.1mm; padding: 3mm 3mm 2mm; display: flex; flex-direction: column; justify-content: space-between; border: 0.3px solid #ddd; overflow: hidden; }
+    .nome { font-size: 8pt; font-weight: bold; color: #000; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .detalhe { font-size: 7pt; color: #444; margin-top: 1mm; }
+    .preco { font-size: 13pt; font-weight: bold; color: #000; margin-top: 1mm; }
+    .barcode { width: 100%; height: 10mm; object-fit: contain; display: block; margin-top: 1mm; }
+    .code { font-size: 6pt; color: #777; text-align: center; margin-top: 1mm; letter-spacing: 0.5px; }
+    @media print {
+      body { margin: 0; }
+      .pagina { padding: 13mm 4.75mm; }
+      .etiqueta { border: 0.3px solid #ccc; }
+    }
+  </style></head><body><div class="pagina"><div class="grid">${etqs}</div></div></body></html>`);
+  w.document.close();
+  setTimeout(()=>w.print(), 500);
 }
 
 carregarDados();
