@@ -224,9 +224,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const API_KEY = 'AIzaSyAe8e5mSOeuxm_E75kKA-RwxaACHEGLW6c';
-const SHEET_ID = '1EDQ9ZCSxKOva4b7HeIse6O2W4YcrOoV2W-2rH61h0AU';
-const BASE = 'https://sheets.googleapis.com/v4/spreadsheets';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx64K32vXsC-pTtdc9SylF-iUzhnxFiau6PWLbzE-MywIk33jO421nfb2snDQ2-7tzyXQ/exec';
 const TAMANHOS = [33,34,35,36,37,38,39,40,41,42];
 
 let produtos = [];
@@ -258,42 +256,29 @@ function showToast(msg,type='success'){
   setTimeout(()=>t.style.display='none',2800);
 }
 
-async function sheetsGet(range){
-  const r=await fetch(`${BASE}/${SHEET_ID}/values/${encodeURIComponent(range)}?key=${API_KEY}`);
-  if(!r.ok) throw new Error('Erro leitura');
-  const d=await r.json(); return d.values||[];
-}
-async function sheetsUpdate(range,values){
-  const r=await fetch(`${BASE}/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=RAW&key=${API_KEY}`,
-    {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({values})});
-  if(!r.ok) throw new Error('Erro update');
-}
-async function sheetsClear(range){
-  const r=await fetch(`${BASE}/${SHEET_ID}/values/${encodeURIComponent(range)}:clear?key=${API_KEY}`,
-    {method:'POST',headers:{'Content-Type':'application/json'}});
-  if(!r.ok) throw new Error('Erro clear');
-}
-async function sheetsAppend(range,values){
-  const r=await fetch(`${BASE}/${SHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=RAW&key=${API_KEY}`,
-    {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({values})});
-  if(!r.ok) throw new Error('Erro append');
+async function scriptCall(params){
+  const url=SCRIPT_URL+'?'+new URLSearchParams(params).toString();
+  const r=await fetch(url);
+  if(!r.ok) throw new Error('Erro de conexão');
+  const d=await r.json();
+  if(!d.ok) throw new Error(d.erro||'Erro desconhecido');
+  return d;
 }
 
 async function carregarDados(){
   setSyncStatus('syncing','Carregando...');
   try{
-    let rows=[];
-    try{ rows=await sheetsGet('Produtos!A2:F'); }catch(e){
-      await sheetsUpdate('Produtos!A1',[['ID','Nome','Cor','Preco','Estoque_JSON','Ativo']]);
-      await sheetsUpdate('Vendas!A1',[['ID','ProdID','Numero','Preco','Data']]);
-    }
-    produtos=rows.filter(r=>r[5]!=='0'&&r[0]).map(r=>({
-      id:r[0]||'',nome:r[1]||'',cor:r[2]||'',preco:parseFloat(r[3])||0,
+    const [rp, rv] = await Promise.all([
+      scriptCall({action:'getProdutos'}),
+      scriptCall({action:'getVendas'})
+    ]);
+    const rowsp = rp.data||[];
+    produtos = rowsp.slice(1).filter(r=>r[5]!=='0'&&r[0]).map(r=>({
+      id:r[0]||'', nome:r[1]||'', cor:r[2]||'', preco:parseFloat(r[3])||0,
       estoque:(()=>{try{return JSON.parse(r[4]||'{}')}catch(e){return{}}})()
     }));
-    let vrows=[];
-    try{ vrows=await sheetsGet('Vendas!A2:E'); }catch(e){}
-    vendas=vrows.map(r=>({id:r[0],prodId:r[1],numero:parseInt(r[2]),preco:parseFloat(r[3]),data:r[4]})).filter(v=>v.id).reverse();
+    const rowsv = rv.data||[];
+    vendas = rowsv.slice(1).map(r=>({id:r[0],prodId:r[1],numero:parseInt(r[2]),preco:parseFloat(r[3]),data:r[4]})).filter(v=>v.id).reverse();
     setSyncStatus('ok','Sincronizado com Google Sheets ✓');
     renderListaProdutos('');
   }catch(e){
@@ -305,10 +290,8 @@ async function carregarDados(){
 async function salvarProdutosSheet(){
   setSyncStatus('syncing','Salvando...');
   try{
-    await sheetsClear('Produtos!A2:F');
-    if(produtos.length){
-      await sheetsUpdate('Produtos!A2',produtos.map(p=>[p.id,p.nome,p.cor,p.preco,JSON.stringify(p.estoque),'1']));
-    }
+    const dados = JSON.stringify(produtos.map(p=>[p.id,p.nome,p.cor,p.preco,JSON.stringify(p.estoque),'1']));
+    await scriptCall({action:'saveProdutos', dados});
     setSyncStatus('ok','Salvo no Google Sheets ✓');
   }catch(e){
     setSyncStatus('error','Erro ao salvar');
@@ -317,8 +300,10 @@ async function salvarProdutosSheet(){
 }
 
 async function salvarVendaSheet(v){
-  try{ await sheetsAppend('Vendas!A:E',[[v.id,v.prodId,v.numero,v.preco,v.data]]); }
-  catch(e){ showToast('Venda salva localmente (sem conexão)','info'); }
+  try{
+    const venda = JSON.stringify([v.id,v.prodId,v.numero,v.preco,v.data]);
+    await scriptCall({action:'saveVenda', venda});
+  }catch(e){ showToast('Venda salva localmente (sem conexão)','info'); }
 }
 
 function showScreen(name){
