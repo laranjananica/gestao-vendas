@@ -8,113 +8,139 @@
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.19.1/umd/index.min.js"></script>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f5f5f3; --surface: #ffffff; --surface-1: #f0eeea;
+  --text: #1a1a18; --text-sec: #6b6b67; --text-muted: #9e9e99;
+  --border: #e0deda; --border-strong: #c8c5bf;
+  --accent: #1a6ef5; --accent-bg: #e8f0fe; --accent-text: #1a4fa0;
+  --success: #1a8a4a; --success-bg: #e6f4ec;
+  --warning: #b45309; --warning-bg: #fef3cd;
+  --danger: #c0392b; --danger-bg: #fdecea;
+  --orange: #ff8c00; --orange-bg: #fff0d9;
+  --radius: 8px;
+}
+@media (prefers-color-scheme: dark) {
   :root {
-    --bg: #f5f5f3; --surface: #ffffff; --surface-1: #f0eeea;
-    --text: #1a1a18; --text-sec: #6b6b67; --text-muted: #9e9e99;
-    --border: #e0deda; --border-strong: #c8c5bf;
-    --accent: #1a6ef5; --accent-bg: #e8f0fe; --accent-text: #1a4fa0;
-    --success: #1a8a4a; --success-bg: #e6f4ec;
-    --warning: #b45309; --warning-bg: #fef3cd;
-    --danger: #c0392b; --danger-bg: #fdecea;
-    --radius: 8px;
+    --bg: #1c1c1a; --surface: #2a2a27; --surface-1: #222220;
+    --text: #f0eeea; --text-sec: #a0a09a; --text-muted: #6b6b67;
+    --border: #3a3a36; --border-strong: #4a4a46;
+    --accent: #4d8ef7; --accent-bg: #1a2a4a; --accent-text: #7ab0fa;
+    --success: #2ecc71; --success-bg: #1a3a28;
+    --warning: #f39c12; --warning-bg: #3a2a10;
+    --danger: #e74c3c; --danger-bg: #3a1a18;
+    --orange: #ff8c00; --orange-bg: #2a1a00;
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #1c1c1a; --surface: #2a2a27; --surface-1: #222220;
-      --text: #f0eeea; --text-sec: #a0a09a; --text-muted: #6b6b67;
-      --border: #3a3a36; --border-strong: #4a4a46;
-      --accent: #4d8ef7; --accent-bg: #1a2a4a; --accent-text: #7ab0fa;
-      --success: #2ecc71; --success-bg: #1a3a28;
-      --warning: #f39c12; --warning-bg: #3a2a10;
-      --danger: #e74c3c; --danger-bg: #3a1a18;
-    }
-  }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-  .app-header { background: var(--surface); border-bottom: 0.5px solid var(--border); padding: 12px 16px; display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 50; }
-  .app-logo { width: 32px; height: 32px; background: #ff8c00; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-  .app-title { font-size: 15px; font-weight: 600; color: var(--text); }
-  .app-subtitle { font-size: 11px; color: var(--text-muted); }
-  .nav { display: flex; background: var(--surface); border-bottom: 0.5px solid var(--border); position: sticky; top: 57px; z-index: 49; }
-  .nav-btn { flex: 1; padding: 8px 2px 6px; font-size: 10px; font-weight: 500; background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 2px; transition: all 0.15s; }
-  .nav-btn i { font-size: 20px; }
-  .nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
-  .screen { display: none; padding: 14px 16px 80px; max-width: 600px; margin: 0 auto; }
-  .screen.active { display: block; }
-  .badge { display: inline-flex; align-items: center; padding: 2px 7px; border-radius: 10px; font-size: 11px; font-weight: 500; }
-  .badge-ok { background: var(--success-bg); color: var(--success); }
-  .badge-low { background: var(--warning-bg); color: var(--warning); }
-  .badge-out { background: var(--danger-bg); color: var(--danger); }
-  .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
-  .form-row { margin-bottom: 10px; }
-  .form-row label { display: block; font-size: 12px; color: var(--text-sec); margin-bottom: 3px; }
-  input, select { width: 100%; padding: 9px 11px; border: 0.5px solid var(--border-strong); border-radius: var(--radius); font-size: 14px; background: var(--surface); color: var(--text); outline: none; font-family: inherit; }
-  input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(26,110,245,0.15); }
-  input[type="number"] { -moz-appearance: textfield; }
-  .btn-primary { width: 100%; padding: 11px; font-size: 14px; font-weight: 600; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); cursor: pointer; margin-top: 6px; display: flex; align-items: center; justify-content: center; gap: 6px; }
-  .btn-primary:active { opacity: 0.85; }
-  .btn-secondary { width: 100%; padding: 11px; font-size: 14px; background: none; border: 0.5px solid var(--border-strong); border-radius: var(--radius); cursor: pointer; color: var(--text); margin-top: 8px; font-family: inherit; }
-  .btn-sm { padding: 7px 12px; font-size: 12px; background: none; border: 0.5px solid var(--border-strong); border-radius: var(--radius); cursor: pointer; color: var(--text); font-family: inherit; }
-  .btn-danger { width: 100%; padding: 11px; font-size: 14px; background: none; border: 0.5px solid var(--danger); border-radius: var(--radius); cursor: pointer; color: var(--danger); margin-top: 8px; font-family: inherit; }
-  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: calc(100% - 32px); max-width: 480px; padding: 11px 16px; border-radius: var(--radius); font-size: 13px; font-weight: 500; display: none; z-index: 999; text-align: center; box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
-  .toast-success { background: var(--success-bg); color: var(--success); border: 0.5px solid var(--success); }
-  .toast-error { background: var(--danger-bg); color: var(--danger); border: 0.5px solid var(--danger); }
-  .toast-info { background: var(--accent-bg); color: var(--accent-text); border: 0.5px solid var(--accent); }
-  .section-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; margin: 16px 0 8px; }
-  .qty-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 8px 12px; }
-  .qty-row label { flex: 1; font-size: 13px; color: var(--text); }
-  .qty-row input { width: 70px; text-align: center; }
-  .product-row { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 0.5px solid var(--border); cursor: pointer; }
-  .product-row:last-child { border-bottom: none; }
-  .product-row:active { opacity: 0.7; }
-  .product-info { flex: 1; min-width: 0; }
-  .product-name { font-size: 14px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .product-detail { font-size: 12px; color: var(--text-sec); margin-top: 2px; }
-  .stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
-  .stat-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; padding: 12px 14px; }
-  .stat-label { font-size: 11px; color: var(--text-sec); margin-bottom: 4px; }
-  .stat-value { font-size: 22px; font-weight: 600; color: var(--text); }
-  .sale-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 0.5px solid var(--border); }
-  .sale-item:last-child { border-bottom: none; }
-  .sale-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); flex-shrink: 0; }
-  .sale-info { flex: 1; min-width: 0; }
-  .sale-name { font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .sale-meta { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
-  .sale-price { font-size: 13px; font-weight: 600; color: var(--success); white-space: nowrap; }
-  .result-card { background: var(--surface); border: 1.5px solid var(--accent); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
-  .result-name { font-size: 17px; font-weight: 600; color: var(--text); }
-  .result-price { font-size: 26px; font-weight: 700; color: var(--accent); margin: 4px 0 8px; }
-  .result-detail { font-size: 13px; color: var(--text-sec); margin-bottom: 10px; }
-  .size-select-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0; }
-  .size-btn { padding: 10px 4px; border: 0.5px solid var(--border-strong); border-radius: var(--radius); background: none; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text); text-align: center; transition: all 0.1s; font-family: inherit; }
-  .size-btn:disabled { color: var(--text-muted); border-color: var(--border); text-decoration: line-through; cursor: not-allowed; background: var(--surface-1); }
-  .size-btn.selected { background: var(--accent); color: #fff; border-color: var(--accent); }
-  .tab-bar { display: flex; gap: 4px; margin-bottom: 14px; background: var(--surface-1); border-radius: var(--radius); padding: 3px; }
-  .tab { flex: 1; padding: 7px; font-size: 13px; border: none; background: none; cursor: pointer; border-radius: 6px; color: var(--text-sec); transition: all 0.1s; font-family: inherit; }
-  .tab.active { background: var(--surface); color: var(--text); font-weight: 500; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-  .empty-state { text-align: center; padding: 40px 16px; }
-  .empty-state i { font-size: 44px; color: var(--text-muted); }
-  .empty-state p { font-size: 14px; color: var(--text-sec); margin-top: 10px; }
-  .search-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
-  .search-row input { flex: 1; }
-  .scan-area { background: var(--surface-1); border: 1.5px dashed var(--border-strong); border-radius: 12px; margin-bottom: 12px; overflow: hidden; position: relative; }
-  .scan-placeholder { padding: 20px; text-align: center; cursor: pointer; }
-  .scan-placeholder i { font-size: 36px; color: var(--text-muted); }
-  .scan-placeholder p { font-size: 13px; color: var(--text-sec); margin-top: 6px; }
-  #scanner-video { width: 100%; max-height: 220px; object-fit: cover; display: none; }
-  .scan-line-wrap { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: none; align-items: center; justify-content: center; pointer-events: none; }
-  .scan-line { width: 75%; height: 2px; background: var(--accent); animation: scanline 1.5s ease-in-out infinite; }
-  @keyframes scanline { 0%,100%{transform:translateY(-50px);opacity:0.3}50%{transform:translateY(50px);opacity:1} }
-  .sync-bar { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); margin-bottom: 12px; padding: 7px 10px; background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); }
-  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); flex-shrink: 0; }
-  .sync-dot.syncing { background: var(--warning); animation: pulse 1s infinite; }
-  .sync-dot.error { background: var(--danger); }
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
-  .label-box { background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 10px 14px; margin-bottom: 8px; }
-  .label-name { font-size: 13px; font-weight: bold; color: #000; }
-  .label-detail { font-size: 11px; color: #555; }
-  .label-price { font-size: 17px; font-weight: bold; color: #000; margin-top: 3px; }
-  .label-code { font-size: 9px; color: #777; margin-top: 3px; letter-spacing: 0.5px; }
+}
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 16px; }
+.app-header { background: var(--surface); border-bottom: 0.5px solid var(--border); padding: 14px 18px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 50; }
+.app-logo { width: 36px; height: 36px; background: var(--orange); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.app-title { font-size: 17px; font-weight: 700; color: var(--text); }
+.app-subtitle { font-size: 12px; color: var(--text-muted); }
+.nav { display: flex; background: var(--surface); border-bottom: 0.5px solid var(--border); position: sticky; top: 64px; z-index: 49; }
+.nav-btn { flex: 1; padding: 10px 2px 8px; font-size: 11px; font-weight: 500; background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 3px; transition: all 0.15s; }
+.nav-btn i { font-size: 22px; }
+.nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.screen { display: none; padding: 16px 16px 100px; max-width: 600px; margin: 0 auto; }
+.screen.active { display: block; }
+.page-title { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.page-sub { font-size: 14px; color: var(--text-sec); margin-bottom: 16px; }
+.back-btn { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--accent); background: none; border: none; cursor: pointer; padding: 0; margin-bottom: 16px; font-family: inherit; font-weight: 500; }
+.badge { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 10px; font-size: 12px; font-weight: 500; }
+.badge-ok { background: var(--success-bg); color: var(--success); }
+.badge-low { background: var(--warning-bg); color: var(--warning); }
+.badge-out { background: var(--danger-bg); color: var(--danger); }
+.badge-fav { background: var(--orange-bg); color: var(--orange); }
+.card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; padding: 16px 18px; margin-bottom: 12px; cursor: pointer; transition: border-color 0.1s; }
+.card:active { border-color: var(--accent); }
+.card-static { cursor: default; }
+.card-static:active { border-color: var(--border); }
+.model-name { font-size: 18px; font-weight: 700; color: var(--text); }
+.model-price { font-size: 22px; font-weight: 700; color: var(--orange); margin: 4px 0; }
+.model-meta { font-size: 13px; color: var(--text-sec); }
+.color-row { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 0.5px solid var(--border); cursor: pointer; }
+.color-row:last-child { border-bottom: none; }
+.color-row:active { opacity: 0.7; }
+.color-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--orange); flex-shrink: 0; }
+.color-info { flex: 1; min-width: 0; }
+.color-name { font-size: 16px; font-weight: 500; color: var(--text); }
+.color-qty { font-size: 13px; color: var(--text-sec); margin-top: 2px; }
+.size-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 12px 0; }
+.size-btn { padding: 16px 8px; border: 0.5px solid var(--border-strong); border-radius: var(--radius); background: none; cursor: pointer; font-size: 16px; font-weight: 600; color: var(--text); text-align: center; transition: all 0.1s; font-family: inherit; }
+.size-btn .size-qty { font-size: 12px; font-weight: 400; color: var(--text-muted); display: block; margin-top: 4px; }
+.size-btn.selected { background: var(--accent); color: #fff; border-color: var(--accent); }
+.size-btn.selected .size-qty { color: rgba(255,255,255,0.8); }
+.form-row { margin-bottom: 12px; }
+.form-row label { display: block; font-size: 13px; color: var(--text-sec); margin-bottom: 4px; font-weight: 500; }
+input, select { width: 100%; padding: 11px 13px; border: 0.5px solid var(--border-strong); border-radius: var(--radius); font-size: 15px; background: var(--surface); color: var(--text); outline: none; font-family: inherit; }
+input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(26,110,245,0.15); }
+input[type="number"] { -moz-appearance: textfield; }
+input[type="checkbox"] { width: auto; margin-right: 8px; transform: scale(1.3); }
+.checkbox-row { display: flex; align-items: center; padding: 10px 0; font-size: 15px; color: var(--text); cursor: pointer; }
+.btn-primary { width: 100%; padding: 14px; font-size: 16px; font-weight: 600; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); cursor: pointer; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-primary:active { opacity: 0.85; }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-secondary { width: 100%; padding: 13px; font-size: 15px; background: none; border: 0.5px solid var(--border-strong); border-radius: var(--radius); cursor: pointer; color: var(--text); margin-top: 8px; font-family: inherit; }
+.btn-sm { padding: 8px 14px; font-size: 13px; background: none; border: 0.5px solid var(--border-strong); border-radius: var(--radius); cursor: pointer; color: var(--text); font-family: inherit; }
+.btn-danger { width: 100%; padding: 13px; font-size: 15px; background: none; border: 0.5px solid var(--danger); border-radius: var(--radius); cursor: pointer; color: var(--danger); margin-top: 8px; font-family: inherit; }
+.btn-icon { padding: 8px; background: none; border: 0.5px solid var(--border); border-radius: var(--radius); cursor: pointer; color: var(--text-sec); font-family: inherit; display: flex; align-items: center; justify-content: center; }
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); width: calc(100% - 32px); max-width: 480px; padding: 13px 18px; border-radius: var(--radius); font-size: 14px; font-weight: 500; display: none; z-index: 999; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+.toast-success { background: var(--success-bg); color: var(--success); border: 0.5px solid var(--success); }
+.toast-error { background: var(--danger-bg); color: var(--danger); border: 0.5px solid var(--danger); }
+.toast-info { background: var(--accent-bg); color: var(--accent-text); border: 0.5px solid var(--accent); }
+.section-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; margin: 18px 0 10px; }
+.qty-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 10px 14px; }
+.qty-row label { flex: 1; font-size: 15px; color: var(--text); }
+.qty-row input { width: 80px; text-align: center; font-size: 15px; }
+.qty-row .fav-star { font-size: 16px; color: var(--orange); }
+.stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
+.stat-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+.stat-label { font-size: 12px; color: var(--text-sec); margin-bottom: 4px; }
+.stat-value { font-size: 24px; font-weight: 700; color: var(--text); }
+.sale-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid var(--border); }
+.sale-item:last-child { border-bottom: none; }
+.sale-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); flex-shrink: 0; }
+.sale-info { flex: 1; min-width: 0; }
+.sale-name { font-size: 14px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sale-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.sale-price { font-size: 14px; font-weight: 700; color: var(--success); white-space: nowrap; }
+.scan-area { background: var(--surface-1); border: 1.5px dashed var(--border-strong); border-radius: 12px; margin-bottom: 14px; overflow: hidden; position: relative; }
+.scan-placeholder { padding: 24px; text-align: center; cursor: pointer; }
+.scan-placeholder i { font-size: 40px; color: var(--text-muted); }
+.scan-placeholder p { font-size: 14px; color: var(--text-sec); margin-top: 8px; }
+#scanner-video { width: 100%; max-height: 240px; object-fit: cover; display: none; }
+.scan-line-wrap { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: none; align-items: center; justify-content: center; pointer-events: none; }
+.scan-line { width: 75%; height: 2px; background: var(--accent); animation: scanline 1.5s ease-in-out infinite; }
+@keyframes scanline { 0%,100%{transform:translateY(-60px);opacity:0.3}50%{transform:translateY(60px);opacity:1} }
+.sync-bar { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); margin-bottom: 14px; padding: 8px 12px; background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); }
+.sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); flex-shrink: 0; }
+.sync-dot.syncing { background: var(--warning); animation: pulse 1s infinite; }
+.sync-dot.error { background: var(--danger); }
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.label-box { background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 10px 14px; margin-bottom: 8px; }
+.label-name { font-size: 13px; font-weight: bold; color: #000; }
+.label-detail { font-size: 11px; color: #555; }
+.label-price { font-size: 17px; font-weight: bold; color: #000; margin-top: 3px; }
+.label-code { font-size: 9px; color: #777; margin-top: 3px; letter-spacing: 0.5px; }
+.search-row { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; }
+.search-row input { flex: 1; }
+.tab-bar { display: flex; gap: 4px; margin-bottom: 16px; background: var(--surface-1); border-radius: var(--radius); padding: 3px; }
+.tab { flex: 1; padding: 9px; font-size: 13px; border: none; background: none; cursor: pointer; border-radius: 6px; color: var(--text-sec); transition: all 0.1s; font-family: inherit; }
+.tab.active { background: var(--surface); color: var(--text); font-weight: 500; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.empty-state { text-align: center; padding: 48px 16px; }
+.empty-state i { font-size: 48px; color: var(--text-muted); }
+.empty-state p { font-size: 15px; color: var(--text-sec); margin-top: 12px; }
+.confirm-card { background: var(--surface); border: 2px solid var(--accent); border-radius: 12px; padding: 18px; margin-bottom: 12px; }
+.confirm-model { font-size: 20px; font-weight: 700; color: var(--text); }
+.confirm-color { font-size: 16px; color: var(--text-sec); margin: 4px 0; }
+.confirm-price { font-size: 28px; font-weight: 700; color: var(--orange); margin: 8px 0; }
+.confirm-size { font-size: 16px; color: var(--text-sec); }
+.color-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: var(--surface-1); border: 0.5px solid var(--border); border-radius: 20px; font-size: 13px; color: var(--text); margin: 3px; cursor: pointer; }
+.color-chip.selected { background: var(--accent-bg); border-color: var(--accent); color: var(--accent); }
+.color-chip i { font-size: 14px; }
+.edit-color-row { display: flex; align-items: center; gap: 8px; padding: 10px 0; border-bottom: 0.5px solid var(--border); }
+.edit-color-row:last-child { border-bottom: none; }
+.edit-color-name { flex: 1; font-size: 15px; color: var(--text); }
 </style>
 </head>
 <body>
@@ -131,43 +157,57 @@
   <button class="nav-btn active" onclick="showScreen('venda')" id="nav-venda"><i class="ti ti-shopping-bag"></i>Vender</button>
   <button class="nav-btn" onclick="showScreen('estoque')" id="nav-estoque"><i class="ti ti-box"></i>Estoque</button>
   <button class="nav-btn" onclick="showScreen('historico')" id="nav-historico"><i class="ti ti-receipt"></i>Histórico</button>
-  <button class="nav-btn" onclick="showScreen('cadastro')" id="nav-cadastro"><i class="ti ti-plus"></i>Cadastrar</button>
+  <button class="nav-btn" onclick="showScreen('cadastro')" id="nav-cadastro"><i class="ti ti-settings"></i>Cadastro</button>
   <button class="nav-btn" onclick="showScreen('etiqueta')" id="nav-etiqueta"><i class="ti ti-tag"></i>Etiquetas</button>
 </nav>
 
 <!-- VENDA -->
 <div class="screen active" id="screen-venda">
-  <div class="sync-bar"><div class="sync-dot syncing" id="sync-dot"></div><span id="sync-text">Carregando dados...</span></div>
-  <div id="venda-busca">
+  <div class="sync-bar"><div class="sync-dot syncing" id="sync-dot"></div><span id="sync-text">Carregando...</span></div>
+
+  <!-- Etapa 1: modelos -->
+  <div id="venda-modelos">
     <div class="search-row">
-      <input type="text" id="busca-input" placeholder="Buscar modelo ou código..." oninput="renderListaProdutos(this.value)" />
-      <button class="btn-sm" onclick="document.getElementById('busca-input').value='';renderListaProdutos('')"><i class="ti ti-x"></i></button>
+      <input type="text" id="busca-input" placeholder="Buscar modelo..." oninput="renderModelos(this.value)" />
+      <button class="btn-sm" onclick="document.getElementById('busca-input').value='';renderModelos('')"><i class="ti ti-x"></i></button>
     </div>
-    <div class="scan-area" id="scan-area">
+    <div class="scan-area">
       <div class="scan-placeholder" id="scan-placeholder" onclick="iniciarScanner()">
         <i class="ti ti-scan"></i>
         <p>Tocar para escanear código de barras</p>
       </div>
       <video id="scanner-video" autoplay playsinline></video>
-      <div class="scan-line-wrap" id="scan-overlay"><div class="scan-line"></div></div>
-      <div id="scan-stop" style="display:none;text-align:center;padding:8px 0 10px;">
+      <div class="scan-line-wrap" id="scan-overlay"></div>
+      <div id="scan-stop" style="display:none;text-align:center;padding:10px 0 12px;">
         <button class="btn-sm" onclick="pararScanner()"><i class="ti ti-x"></i> Parar câmera</button>
       </div>
     </div>
+    <div id="modelos-lista"></div>
   </div>
-  <div id="venda-resultado" style="display:none;">
-    <div class="result-card">
-      <div class="result-name" id="result-nome"></div>
-      <div class="result-detail" id="result-detalhe"></div>
-      <div class="result-price" id="result-preco"></div>
-      <div style="font-size:12px;color:var(--text-sec);margin-bottom:4px;">Escolha o número:</div>
-      <div class="size-select-grid" id="size-grid"></div>
+
+  <!-- Etapa 2: cores -->
+  <div id="venda-cores" style="display:none;">
+    <button class="back-btn" onclick="voltarModelos()"><i class="ti ti-arrow-left"></i> Voltar</button>
+    <div class="page-title" id="cores-titulo"></div>
+    <div class="model-price" id="cores-preco"></div>
+    <div class="page-sub" id="cores-sub"></div>
+    <div class="card card-static" style="padding:0 18px;">
+      <div id="cores-lista"></div>
+    </div>
+  </div>
+
+  <!-- Etapa 3: números -->
+  <div id="venda-numeros" style="display:none;">
+    <button class="back-btn" onclick="voltarCores()"><i class="ti ti-arrow-left"></i> Voltar</button>
+    <div class="confirm-card" id="confirm-card">
+      <div class="confirm-model" id="conf-modelo"></div>
+      <div class="confirm-color" id="conf-cor"></div>
+      <div class="confirm-price" id="conf-preco"></div>
+      <div class="confirm-size">Escolha o número:</div>
+      <div class="size-grid" id="size-grid"></div>
     </div>
     <button class="btn-primary" id="btn-confirmar" onclick="confirmarVenda()" disabled><i class="ti ti-check"></i> Confirmar venda</button>
-    <button class="btn-secondary" onclick="voltarBusca()">Voltar à busca</button>
-  </div>
-  <div class="card" id="lista-card" style="padding:0 16px;">
-    <div id="lista-produtos"></div>
+    <button class="btn-secondary" onclick="voltarCores()">Cancelar</button>
   </div>
 </div>
 
@@ -181,43 +221,88 @@
 <div class="screen" id="screen-historico">
   <div class="stat-grid" id="hist-stats"></div>
   <div class="section-label">Vendas recentes</div>
-  <div class="card" style="padding:0 16px;"><div id="historico-lista"></div></div>
+  <div class="card card-static" style="padding:0 18px;"><div id="historico-lista"></div></div>
 </div>
 
 <!-- CADASTRO -->
 <div class="screen" id="screen-cadastro">
   <div class="tab-bar">
     <button class="tab active" onclick="switchCadTab('novo',this)">Novo modelo</button>
-    <button class="tab" onclick="switchCadTab('edit',this)">Editar estoque</button>
+    <button class="tab" onclick="switchCadTab('cores',this)">Gerenciar cores</button>
+    <button class="tab" onclick="switchCadTab('estoque',this)">Editar estoque</button>
   </div>
+
+  <!-- Novo modelo -->
   <div id="cad-novo">
-    <div class="form-row"><label>Nome do modelo</label><input type="text" id="cad-nome" placeholder="Ex: Sapatilha Dobrável" /></div>
-    <div class="form-row"><label>Variação (cor ou acabamento)</label><input type="text" id="cad-cor" placeholder="Ex: Preto fosco, Zebra..." /></div>
-    <div class="form-row"><label>Preço (R$)</label><input type="number" id="cad-preco" placeholder="0,00" step="0.01" min="0" /></div>
-    <div class="section-label">Quantidade por número</div>
+    <div class="form-row"><label>Nome do modelo</label>
+      <input type="text" id="cad-nome" placeholder="Ex: Sapatilha Dobrável" list="modelos-list" />
+      <datalist id="modelos-list"></datalist>
+    </div>
+    <div class="form-row"><label>Preço (R$)</label>
+      <input type="number" id="cad-preco" placeholder="0,00" step="0.01" min="0" />
+    </div>
+    <div class="section-label">Cores disponíveis</div>
+    <div id="cores-novas-lista"></div>
+    <button class="btn-sm" onclick="adicionarCorNova()" style="margin-top:8px;width:100%;"><i class="ti ti-plus"></i> Adicionar cor</button>
+    <div class="section-label">Estoque inicial por número</div>
     <div id="qty-rows"></div>
-    <button class="btn-primary" onclick="salvarProduto()"><i class="ti ti-check"></i> Salvar modelo</button>
+    <button class="btn-primary" onclick="salvarModelo()"><i class="ti ti-check"></i> Salvar modelo</button>
   </div>
-  <div id="cad-edit" style="display:none;">
-    <div class="form-row"><label>Selecionar produto</label><select id="edit-select" onchange="carregarEdit()"></select></div>
-    <div id="edit-fields" style="display:none;">
-      <div class="form-row"><label>Preço (R$)</label><input type="number" id="edit-preco" step="0.01" min="0" /></div>
-      <div class="section-label">Ajustar estoque por número</div>
-      <div id="edit-qty-rows"></div>
-      <button class="btn-primary" onclick="salvarEdit()">Salvar alterações</button>
-      <button class="btn-danger" onclick="excluirProduto()">Excluir este modelo</button>
+
+  <!-- Gerenciar cores -->
+  <div id="cad-cores" style="display:none;">
+    <div class="form-row"><label>Selecionar modelo</label>
+      <select id="cores-modelo-select" onchange="carregarCoresModelo()"></select>
+    </div>
+    <div id="cores-modelo-area" style="display:none;">
+      <div class="section-label">Cores cadastradas</div>
+      <div class="card card-static" style="padding:0 18px;"><div id="cores-modelo-lista"></div></div>
+      <button class="btn-sm" onclick="adicionarCorExistente()" style="margin-top:10px;width:100%;"><i class="ti ti-plus"></i> Adicionar nova cor</button>
+      <div id="nova-cor-area" style="display:none;margin-top:12px;">
+        <div class="form-row"><label>Nome da cor</label><input type="text" id="nova-cor-nome" placeholder="Ex: Verde Musgo" /></div>
+        <label class="checkbox-row"><input type="checkbox" id="nova-cor-fav" /> Cor favorita (alerta quando estoque baixo)</label>
+        <div class="section-label">Estoque inicial</div>
+        <div id="nova-cor-qtys"></div>
+        <button class="btn-primary" onclick="salvarNovaCorExistente()"><i class="ti ti-check"></i> Adicionar cor</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Editar estoque -->
+  <div id="cad-estoque" style="display:none;">
+    <div class="form-row"><label>Selecionar modelo</label>
+      <select id="edit-modelo-select" onchange="carregarEditModelo()"></select>
+    </div>
+    <div id="edit-cor-area" style="display:none;">
+      <div class="form-row"><label>Selecionar cor</label>
+        <select id="edit-cor-select" onchange="carregarEditEstoque()"></select>
+      </div>
+      <div id="edit-estoque-area" style="display:none;">
+        <div class="form-row"><label>Preço (R$)</label><input type="number" id="edit-preco" step="0.01" min="0" /></div>
+        <div class="section-label">Estoque por número</div>
+        <div id="edit-qty-rows"></div>
+        <button class="btn-primary" onclick="salvarEditEstoque()">Salvar alterações</button>
+        <button class="btn-danger" onclick="excluirCor()">Excluir esta cor</button>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- ETIQUETAS -->
 <div class="screen" id="screen-etiqueta">
-  <div class="form-row"><label>Selecionar produto</label><select id="etiq-select" onchange="gerarEtiqueta()"></select></div>
-  <div id="etiq-preview" style="display:none;">
-    <div class="section-label">Prévia das etiquetas</div>
+  <div class="form-row"><label>Selecionar modelo</label>
+    <select id="etiq-modelo-select" onchange="carregarEtiqCores()"></select>
+  </div>
+  <div id="etiq-cores-area" style="display:none;">
+    <div class="section-label">Selecionar cores para imprimir</div>
+    <div id="etiq-cores-chips"></div>
+    <button class="btn-primary" style="margin-top:12px;" onclick="gerarEtiquetas()"><i class="ti ti-eye"></i> Visualizar etiquetas</button>
+  </div>
+  <div id="etiq-preview" style="display:none;margin-top:16px;">
+    <div class="section-label">Prévia</div>
     <div id="etiq-lista"></div>
-    <button class="btn-primary" onclick="imprimirEtiquetas()"><i class="ti ti-printer"></i> Imprimir etiquetas</button>
-    <p style="font-size:11px;color:var(--text-muted);margin-top:10px;">Use papel adesivo A4. Uma etiqueta por número disponível.</p>
+    <button class="btn-primary" onclick="imprimirEtiquetas()"><i class="ti ti-printer"></i> Imprimir</button>
+    <p style="font-size:12px;color:var(--text-muted);margin-top:10px;">Use papel adesivo A4.</p>
   </div>
 </div>
 
@@ -226,64 +311,71 @@
 <script>
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx64K32vXsC-pTtdc9SylF-iUzhnxFiau6PWLbzE-MywIk33jO421nfb2snDQ2-7tzyXQ/exec';
 const TAMANHOS = [33,34,35,36,37,38,39,40,41,42];
+const NUMS_FAV = [36,37,38];
 
+// produtos = [{id, nome, cor, preco, estoque:{36:2,...}, favorita:true}]
 let produtos = [];
 let vendas = [];
 let selectedProdId = null;
 let selectedSize = null;
+let selectedModeloNome = null;
 let codeReader = null;
+let coresNovas = []; // para cadastro de novo modelo
 
 function fmtPreco(v){ return 'R$ '+Number(v).toFixed(2).replace('.',','); }
 function fmtData(d){
   if(!d) return '';
-  const dt=new Date(d), hoje=new Date(), ontem=new Date(hoje);
+  const dt=new Date(d),hoje=new Date(),ontem=new Date(hoje);
   ontem.setDate(hoje.getDate()-1);
   if(dt.toDateString()===hoje.toDateString()) return 'Hoje';
   if(dt.toDateString()===ontem.toDateString()) return 'Ontem';
   return dt.toLocaleDateString('pt-BR');
 }
 function genId(p){ return p+Date.now().toString(36).toUpperCase(); }
-function prodLabel(p){ return p.nome+' — '+p.cor; }
+
+// Agrupa produtos por nome do modelo
+function getModelos() {
+  const map = {};
+  produtos.forEach(p => {
+    if (!map[p.nome]) map[p.nome] = { nome: p.nome, preco: p.preco, cores: [] };
+    map[p.nome].cores.push(p);
+  });
+  return Object.values(map);
+}
+
+function getCoresByModelo(nome) {
+  return produtos.filter(p => p.nome === nome);
+}
 
 function setSyncStatus(state,msg){
-  const dot=document.getElementById('sync-dot'), txt=document.getElementById('sync-text');
+  const dot=document.getElementById('sync-dot'),txt=document.getElementById('sync-text');
   dot.className='sync-dot'+(state==='syncing'?' syncing':state==='error'?' error':'');
   txt.textContent=msg;
 }
 function showToast(msg,type='success'){
   const t=document.getElementById('toast');
-  t.textContent=msg; t.className='toast toast-'+type; t.style.display='block';
+  t.textContent=msg;t.className='toast toast-'+type;t.style.display='block';
   setTimeout(()=>t.style.display='none',2800);
 }
 
 function scriptCall(params){
-  return new Promise((resolve, reject) => {
-    const cbName = 'cb_' + Date.now();
-    const timeout = setTimeout(() => {
+  return new Promise((resolve,reject)=>{
+    const cbName='cb_'+Date.now();
+    const timeout=setTimeout(()=>{
       delete window[cbName];
-      const el = document.getElementById(cbName);
-      if (el) el.remove();
+      const el=document.getElementById(cbName);if(el)el.remove();
       reject(new Error('Timeout'));
-    }, 15000);
-    window[cbName] = (data) => {
-      clearTimeout(timeout);
-      delete window[cbName];
-      const el = document.getElementById(cbName);
-      if (el) el.remove();
-      if (data.ok) resolve(data);
-      else reject(new Error(data.erro || 'Erro'));
+    },15000);
+    window[cbName]=(data)=>{
+      clearTimeout(timeout);delete window[cbName];
+      const el=document.getElementById(cbName);if(el)el.remove();
+      if(data.ok) resolve(data); else reject(new Error(data.erro||'Erro'));
     };
-    params.callback = cbName;
-    const url = SCRIPT_URL + '?' + new URLSearchParams(params).toString();
-    const script = document.createElement('script');
-    script.id = cbName;
-    script.src = url;
-    script.onerror = () => {
-      clearTimeout(timeout);
-      delete window[cbName];
-      script.remove();
-      reject(new Error('Erro de rede'));
-    };
+    params.callback=cbName;
+    const url=SCRIPT_URL+'?'+new URLSearchParams(params).toString();
+    const script=document.createElement('script');
+    script.id=cbName;script.src=url;
+    script.onerror=()=>{clearTimeout(timeout);delete window[cbName];script.remove();reject(new Error('Erro de rede'));};
     document.head.appendChild(script);
   });
 }
@@ -291,42 +383,33 @@ function scriptCall(params){
 async function carregarDados(){
   setSyncStatus('syncing','Carregando...');
   try{
-    const [rp, rv] = await Promise.all([
-      scriptCall({action:'getProdutos'}),
-      scriptCall({action:'getVendas'})
-    ]);
-    const rowsp = rp.data||[];
-    produtos = rowsp.slice(1).filter(r=>r[5]!=='0'&&r[0]).map(r=>({
-      id:r[0]||'', nome:r[1]||'', cor:r[2]||'', preco:parseFloat(r[3])||0,
-      estoque:(()=>{try{return JSON.parse(r[4]||'{}')}catch(e){return{}}})()
+    const [rp,rv]=await Promise.all([scriptCall({action:'getProdutos'}),scriptCall({action:'getVendas'})]);
+    produtos=rp.data.slice(1).filter(r=>r[0]&&r[5]!=='0').map(r=>({
+      id:r[0],nome:r[1],cor:r[2],preco:parseFloat(r[3])||0,
+      estoque:(()=>{try{return JSON.parse(r[4]||'{}')}catch(e){return{}}})(),
+      favorita: r[6]==='1'
     }));
-    const rowsv = rv.data||[];
-    vendas = rowsv.slice(1).map(r=>({id:r[0],prodId:r[1],numero:parseInt(r[2]),preco:parseFloat(r[3]),data:r[4]})).filter(v=>v.id).reverse();
-    setSyncStatus('ok','Sincronizado com Google Sheets ✓');
-    renderListaProdutos('');
+    vendas=rv.data.slice(1).filter(r=>r[0]).map(r=>({id:r[0],prodId:r[1],numero:parseInt(r[2]),preco:parseFloat(r[3])||0,data:r[4]})).reverse();
+    setSyncStatus('ok','Sincronizado ✓');
+    renderModelos('');
   }catch(e){
     setSyncStatus('error','Sem conexão com a planilha');
-    showToast('Erro ao conectar com a planilha','error');
+    showToast('Erro ao conectar','error');
   }
 }
 
 async function salvarProdutosSheet(){
   setSyncStatus('syncing','Salvando...');
   try{
-    const dados = JSON.stringify(produtos.map(p=>[p.id,p.nome,p.cor,p.preco,JSON.stringify(p.estoque),'1']));
-    await scriptCall({action:'saveProdutos', dados});
-    setSyncStatus('ok','Salvo no Google Sheets ✓');
-  }catch(e){
-    setSyncStatus('error','Erro ao salvar');
-    showToast('Erro ao salvar na planilha','error');
-  }
+    const dados=JSON.stringify(produtos.map(p=>[p.id,p.nome,p.cor,p.preco,JSON.stringify(p.estoque),'1',p.favorita?'1':'0']));
+    await scriptCall({action:'saveProdutos',dados});
+    setSyncStatus('ok','Salvo ✓');
+  }catch(e){setSyncStatus('error','Erro ao salvar');showToast('Erro ao salvar','error');}
 }
 
 async function salvarVendaSheet(v){
-  try{
-    const venda = JSON.stringify([v.id,v.prodId,v.numero,v.preco,v.data]);
-    await scriptCall({action:'saveVenda', venda});
-  }catch(e){ showToast('Venda salva localmente (sem conexão)','info'); }
+  try{await scriptCall({action:'saveVenda',venda:JSON.stringify([v.id,v.prodId,v.numero,v.preco,v.data])});}
+  catch(e){showToast('Venda salva localmente','info');}
 }
 
 function showScreen(name){
@@ -338,73 +421,74 @@ function showScreen(name){
   if(name==='estoque') renderEstoque();
   if(name==='historico') renderHistorico();
   if(name==='cadastro') renderCadastro();
-  if(name==='etiqueta') renderEtiquetaSelect();
-  if(name==='venda'){voltarBusca();renderListaProdutos('');}
+  if(name==='etiqueta') renderEtiquetaModelos();
+  if(name==='venda'){voltarModelos();renderModelos('');}
 }
 
-function renderListaProdutos(query){
-  const el=document.getElementById('lista-produtos');
-  const lc=document.getElementById('lista-card');
+// ===== VENDA =====
+function renderModelos(query){
+  const el=document.getElementById('modelos-lista');
   const q=query.toLowerCase();
-  const filtrados=produtos.filter(p=>p.nome.toLowerCase().includes(q)||p.cor.toLowerCase().includes(q)||p.id.toLowerCase().includes(q));
-  if(!filtrados.length){
-    lc.style.display='none';
-    el.innerHTML='<div class="empty-state"><i class="ti ti-search"></i><p>Nenhum produto encontrado</p></div>';
-    lc.style.display='block'; return;
+  const modelos=getModelos().filter(m=>m.nome.toLowerCase().includes(q));
+  if(!modelos.length){
+    el.innerHTML='<div class="empty-state"><i class="ti ti-search"></i><p>Nenhum modelo encontrado</p></div>';
+    return;
   }
-  const tot=p=>Object.values(p.estoque).reduce((a,b)=>a+ +b,0);
-  lc.style.display='block';
-  el.innerHTML=filtrados.map(p=>{
-    const t=tot(p),bc=t===0?'badge-out':t<=3?'badge-low':'badge-ok',bt=t===0?'Sem estoque':t<=3?t+' restantes':t+' em estoque';
-    return `<div class="product-row" onclick="selecionarProduto('${p.id}')">
-      <div class="product-info"><div class="product-name">${p.nome}</div><div class="product-detail">${p.cor} · ${p.id}</div></div>
-      <div style="text-align:right;flex-shrink:0;"><div style="font-size:13px;font-weight:600;color:var(--text);">${fmtPreco(p.preco)}</div><span class="badge ${bc}" style="margin-top:3px;">${bt}</span></div>
+  el.innerHTML=modelos.map(m=>{
+    const totalPares=m.cores.reduce((a,p)=>a+Object.values(p.estoque).reduce((b,c)=>b+(parseInt(c)||0),0),0);
+    const coresDisp=m.cores.filter(p=>Object.values(p.estoque).some(q=>parseInt(q)>0)).length;
+    const bc=totalPares===0?'badge-out':totalPares<=5?'badge-low':'badge-ok';
+    const bt=totalPares===0?'Sem estoque':totalPares+' pares';
+    return `<div class="card" onclick="selecionarModelo('${m.nome.replace(/'/g,"\\'")}')">
+      <div class="model-name">${m.nome}</div>
+      <div class="model-price">${fmtPreco(m.preco)}</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+        <span class="badge ${bc}">${bt}</span>
+        <span style="font-size:13px;color:var(--text-sec)">${coresDisp} ${coresDisp===1?'cor disponível':'cores disponíveis'}</span>
+      </div>
     </div>`;
   }).join('');
 }
 
-async function iniciarScanner(){
-  if(typeof ZXing==='undefined'){showToast('Scanner não disponível','error');return;}
-  try{
-    const video=document.getElementById('scanner-video');
-    document.getElementById('scan-placeholder').style.display='none';
-    video.style.display='block';
-    document.getElementById('scan-overlay').style.display='flex';
-    document.getElementById('scan-stop').style.display='block';
-    codeReader=new ZXing.BrowserMultiFormatReader();
-    await codeReader.decodeFromVideoDevice(null,'scanner-video',(result,err)=>{
-      if(result){
-        const code=result.getText();
-        pararScanner();
-        const p=produtos.find(x=>x.id===code||Object.keys(x.estoque).some(n=>x.id+'-'+n===code));
-        if(p){showToast('Código lido!');selecionarProduto(p.id);}
-        else{showToast('Produto não encontrado: '+code,'error');}
-      }
-    });
-  }catch(e){ pararScanner(); showToast('Câmera indisponível. Use a busca.','error'); }
+function selecionarModelo(nome){
+  selectedModeloNome=nome;
+  const cores=getCoresByModelo(nome).filter(p=>Object.values(p.estoque).some(q=>parseInt(q)>0));
+  document.getElementById('venda-modelos').style.display='none';
+  document.getElementById('venda-cores').style.display='block';
+  document.getElementById('cores-titulo').textContent=nome;
+  const m=getModelos().find(x=>x.nome===nome);
+  document.getElementById('cores-preco').textContent=fmtPreco(m?m.preco:0);
+  document.getElementById('cores-sub').textContent=cores.length+' '+(cores.length===1?'cor disponível':'cores disponíveis');
+  const lista=document.getElementById('cores-lista');
+  if(!cores.length){
+    lista.innerHTML='<div class="empty-state"><i class="ti ti-box-off"></i><p>Sem estoque disponível</p></div>';
+    return;
+  }
+  lista.innerHTML=cores.map(p=>{
+    const tot=Object.values(p.estoque).reduce((a,b)=>a+(parseInt(b)||0),0);
+    return `<div class="color-row" onclick="selecionarCor('${p.id}')">
+      <div class="color-dot" style="background:var(--orange)"></div>
+      <div class="color-info">
+        <div class="color-name">${p.cor}${p.favorita?' ⭐':''}</div>
+        <div class="color-qty">${tot} ${tot===1?'par':'pares'} disponíveis</div>
+      </div>
+      <i class="ti ti-chevron-right" style="color:var(--text-muted);font-size:20px;"></i>
+    </div>`;
+  }).join('');
 }
 
-function pararScanner(){
-  if(codeReader){try{codeReader.reset();}catch(e){}codeReader=null;}
-  const video=document.getElementById('scanner-video');
-  if(video){video.style.display='none';if(video.srcObject){video.srcObject.getTracks().forEach(t=>t.stop());video.srcObject=null;}}
-  const pl=document.getElementById('scan-placeholder');if(pl)pl.style.display='block';
-  const ov=document.getElementById('scan-overlay');if(ov)ov.style.display='none';
-  const ss=document.getElementById('scan-stop');if(ss)ss.style.display='none';
-}
-
-function selecionarProduto(id){
+function selecionarCor(id){
   const p=produtos.find(x=>x.id===id);if(!p)return;
   selectedProdId=id;selectedSize=null;
-  document.getElementById('venda-busca').style.display='none';
-  document.getElementById('lista-card').style.display='none';
-  document.getElementById('venda-resultado').style.display='block';
-  document.getElementById('result-nome').textContent=p.nome;
-  document.getElementById('result-detalhe').textContent=p.cor+' · '+p.id;
-  document.getElementById('result-preco').textContent=fmtPreco(p.preco);
-  document.getElementById('size-grid').innerHTML=Object.entries(p.estoque).map(([n,q])=>
-    `<button class="size-btn" ${+q===0?'disabled':''} onclick="selecionarNumero(${n})" id="sz-${n}">
-      ${n}<br><span style="font-size:10px;font-weight:400;color:var(--text-muted)">${+q>0?q+'un':'—'}</span>
+  document.getElementById('venda-cores').style.display='none';
+  document.getElementById('venda-numeros').style.display='block';
+  document.getElementById('conf-modelo').textContent=p.nome;
+  document.getElementById('conf-cor').textContent=p.cor+(p.favorita?' ⭐':'');
+  document.getElementById('conf-preco').textContent=fmtPreco(p.preco);
+  const disponiveis=Object.entries(p.estoque).filter(([,q])=>parseInt(q)>0);
+  document.getElementById('size-grid').innerHTML=disponiveis.map(([n,q])=>
+    `<button class="size-btn" onclick="selecionarNumero(${n})" id="sz-${n}">
+      ${n}<span class="size-qty">${q} un</span>
     </button>`
   ).join('');
   document.getElementById('btn-confirmar').disabled=true;
@@ -419,49 +503,107 @@ function selecionarNumero(n){
 
 async function confirmarVenda(){
   const p=produtos.find(x=>x.id===selectedProdId);if(!p||!selectedSize)return;
-  p.estoque[selectedSize]=Math.max(0,(+p.estoque[selectedSize]||0)-1);
+  p.estoque[selectedSize]=Math.max(0,(parseInt(p.estoque[selectedSize])||0)-1);
   const venda={id:genId('V'),prodId:selectedProdId,numero:selectedSize,preco:p.preco,data:new Date().toISOString()};
   vendas.unshift(venda);
-  showToast('Venda registrada! '+p.nome+' nº '+selectedSize);
-  voltarBusca();
+  showToast('Venda registrada! '+p.nome+' '+p.cor+' nº '+selectedSize);
+  voltarModelos();
   await salvarVendaSheet(venda);
   await salvarProdutosSheet();
 }
 
-function voltarBusca(){
-  selectedProdId=null;selectedSize=null;
-  document.getElementById('venda-busca').style.display='block';
-  document.getElementById('lista-card').style.display='block';
-  document.getElementById('venda-resultado').style.display='none';
+function voltarModelos(){
+  selectedModeloNome=null;selectedProdId=null;selectedSize=null;
+  document.getElementById('venda-modelos').style.display='block';
+  document.getElementById('venda-cores').style.display='none';
+  document.getElementById('venda-numeros').style.display='none';
   document.getElementById('busca-input').value='';
-  renderListaProdutos('');
+  renderModelos('');
+}
+function voltarCores(){
+  selectedProdId=null;selectedSize=null;
+  document.getElementById('venda-cores').style.display='block';
+  document.getElementById('venda-numeros').style.display='none';
 }
 
+// Scanner
+async function iniciarScanner(){
+  if(typeof ZXing==='undefined'){showToast('Scanner não disponível','error');return;}
+  try{
+    document.getElementById('scan-placeholder').style.display='none';
+    document.getElementById('scanner-video').style.display='block';
+    document.getElementById('scan-overlay').style.display='flex';
+    document.getElementById('scan-stop').style.display='block';
+    codeReader=new ZXing.BrowserMultiFormatReader();
+    await codeReader.decodeFromVideoDevice(null,'scanner-video',(result)=>{
+      if(result){
+        const code=result.getText();pararScanner();
+        const p=produtos.find(x=>x.id===code||Object.keys(x.estoque).some(n=>x.id+'-'+n===code));
+        if(p){showToast('Código lido!');selecionarModelo(p.nome);setTimeout(()=>selecionarCor(p.id),300);}
+        else showToast('Produto não encontrado','error');
+      }
+    });
+  }catch(e){pararScanner();showToast('Câmera indisponível','error');}
+}
+function pararScanner(){
+  if(codeReader){try{codeReader.reset();}catch(e){}codeReader=null;}
+  const v=document.getElementById('scanner-video');
+  if(v){v.style.display='none';if(v.srcObject){v.srcObject.getTracks().forEach(t=>t.stop());v.srcObject=null;}}
+  const pl=document.getElementById('scan-placeholder');if(pl)pl.style.display='block';
+  const ov=document.getElementById('scan-overlay');if(ov)ov.style.display='none';
+  const ss=document.getElementById('scan-stop');if(ss)ss.style.display='none';
+}
+
+// ===== ESTOQUE =====
 function renderEstoque(){
-  const total=produtos.reduce((a,p)=>a+Object.values(p.estoque).reduce((b,c)=>b+ +c,0),0);
-  const semEst=produtos.filter(p=>Object.values(p.estoque).every(q=>+q===0)).length;
+  const modelos=getModelos();
+  const totalPares=produtos.reduce((a,p)=>a+Object.values(p.estoque).reduce((b,c)=>b+(parseInt(c)||0),0),0);
+  const semEst=produtos.filter(p=>Object.values(p.estoque).every(q=>parseInt(q)===0)).length;
   document.getElementById('stats-grid').innerHTML=`
-    <div class="stat-card"><div class="stat-label">Modelos cadastrados</div><div class="stat-value">${produtos.length}</div></div>
-    <div class="stat-card"><div class="stat-label">Pares em estoque</div><div class="stat-value">${total}</div></div>
-    <div class="stat-card"><div class="stat-label">Vendas totais</div><div class="stat-value">${vendas.length}</div></div>
-    <div class="stat-card"><div class="stat-label">Sem estoque</div><div class="stat-value">${semEst}</div></div>`;
-  document.getElementById('estoque-lista').innerHTML=produtos.map(p=>{
-    const tot=Object.values(p.estoque).reduce((a,b)=>a+ +b,0);
-    const bc=tot===0?'badge-out':tot<=3?'badge-low':'badge-ok',bt=tot===0?'Sem estoque':tot<=3?'Estoque baixo':'OK';
-    const sizes=Object.entries(p.estoque).filter(([,q])=>+q>0).map(([n,q])=>`<span class="badge badge-ok" style="margin:2px;">${n}: ${q}</span>`).join('');
-    return `<div class="card">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-        <div style="flex:1;"><div style="font-size:14px;font-weight:500;">${p.nome}</div><div style="font-size:12px;color:var(--text-sec);">${p.cor} · ${p.id}</div></div>
-        <span class="badge ${bc}">${bt}</span>
+    <div class="stat-card"><div class="stat-label">Modelos</div><div class="stat-value">${modelos.length}</div></div>
+    <div class="stat-card"><div class="stat-label">Variações (cores)</div><div class="stat-value">${produtos.length}</div></div>
+    <div class="stat-card"><div class="stat-label">Pares em estoque</div><div class="stat-value">${totalPares}</div></div>
+    <div class="stat-card"><div class="stat-label">Cores sem estoque</div><div class="stat-value">${semEst}</div></div>`;
+
+  // Alertas de favoritas
+  const alertas=produtos.filter(p=>p.favorita&&NUMS_FAV.some(n=>(parseInt(p.estoque[n])||0)<=1));
+  let alertaHtml='';
+  if(alertas.length){
+    alertaHtml=`<div style="background:var(--warning-bg);border:0.5px solid var(--warning);border-radius:12px;padding:14px 16px;margin-bottom:16px;">
+      <div style="font-size:13px;font-weight:600;color:var(--warning);margin-bottom:8px;">⚠️ Estoque baixo — cores favoritas</div>
+      ${alertas.map(p=>{
+        const numsBaixos=NUMS_FAV.filter(n=>(parseInt(p.estoque[n])||0)<=1).map(n=>`nº${n}(${parseInt(p.estoque[n])||0})`).join(', ');
+        return `<div style="font-size:13px;color:var(--text);margin-bottom:4px;">⭐ ${p.nome} — ${p.cor}: ${numsBaixos}</div>`;
+      }).join('')}
+    </div>`;
+  }
+
+  document.getElementById('estoque-lista').innerHTML=alertaHtml+modelos.map(m=>{
+    const tot=m.cores.reduce((a,p)=>a+Object.values(p.estoque).reduce((b,c)=>b+(parseInt(c)||0),0),0);
+    return `<div class="card card-static">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div class="model-name">${m.nome}</div>
+        <div style="font-size:15px;font-weight:600;color:var(--orange);">${fmtPreco(m.preco)}</div>
       </div>
-      <div style="font-size:14px;font-weight:600;color:var(--accent);margin-bottom:6px;">${fmtPreco(p.preco)}</div>
-      <div>${sizes||'<span style="font-size:12px;color:var(--text-muted)">Nenhum par disponível</span>'}</div>
+      ${m.cores.map(p=>{
+        const totP=Object.values(p.estoque).reduce((a,b)=>a+(parseInt(b)||0),0);
+        const bc=totP===0?'badge-out':totP<=3?'badge-low':'badge-ok';
+        const sizes=Object.entries(p.estoque).filter(([,q])=>parseInt(q)>0).map(([n,q])=>`<span style="font-size:12px;background:var(--surface-1);padding:2px 7px;border-radius:6px;margin:2px;display:inline-block;">${n}: ${q}</span>`).join('');
+        return `<div style="padding:8px 0;border-top:0.5px solid var(--border);">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <span style="font-size:14px;font-weight:500;">${p.cor}${p.favorita?' ⭐':''}</span>
+            <span class="badge ${bc}">${totP} pares</span>
+          </div>
+          <div>${sizes||'<span style="font-size:12px;color:var(--text-muted)">Sem estoque</span>'}</div>
+        </div>`;
+      }).join('')}
     </div>`;
   }).join('');
 }
 
+// ===== HISTORICO =====
 function renderHistorico(){
-  const totalV=vendas.reduce((a,v)=>a+(+v.preco||0),0);
+  const totalV=vendas.reduce((a,v)=>a+v.preco,0);
   const hoje=vendas.filter(v=>new Date(v.data).toDateString()===new Date().toDateString());
   document.getElementById('hist-stats').innerHTML=`
     <div class="stat-card"><div class="stat-label">Total vendido</div><div class="stat-value" style="font-size:18px;">${fmtPreco(totalV)}</div></div>
@@ -469,136 +611,252 @@ function renderHistorico(){
   const lista=document.getElementById('historico-lista');
   if(!vendas.length){lista.innerHTML='<div class="empty-state"><i class="ti ti-receipt-off"></i><p>Nenhuma venda ainda</p></div>';return;}
   lista.innerHTML=vendas.map(v=>{
-    const p=produtos.find(x=>x.id===v.prodId),nome=p?prodLabel(p):v.prodId;
+    const p=produtos.find(x=>x.id===v.prodId);
+    const nome=p?`${p.nome} — ${p.cor}`:v.prodId;
     return `<div class="sale-item"><div class="sale-dot"></div>
       <div class="sale-info"><div class="sale-name">${nome}</div><div class="sale-meta">Nº ${v.numero} · ${fmtData(v.data)}</div></div>
       <div class="sale-price">${fmtPreco(v.preco)}</div></div>`;
   }).join('');
 }
 
+// ===== CADASTRO =====
 function renderCadastro(){
-  document.getElementById('qty-rows').innerHTML=TAMANHOS.map(n=>
-    `<div class="qty-row"><label>Nº ${n}</label><input type="number" id="qty-${n}" value="0" min="0" /></div>`
-  ).join('');
-  const sel=document.getElementById('edit-select');
-  sel.innerHTML='<option value="">— selecione —</option>'+produtos.map(p=>`<option value="${p.id}">${prodLabel(p)}</option>`).join('');
-  document.getElementById('edit-fields').style.display='none';
+  // Preenche datalist com modelos existentes
+  const nomes=[...new Set(produtos.map(p=>p.nome))];
+  document.getElementById('modelos-list').innerHTML=nomes.map(n=>`<option value="${n}">`).join('');
+  // Qty rows
+  document.getElementById('qty-rows').innerHTML=TAMANHOS.map(n=>{
+    const isFav=NUMS_FAV.includes(n);
+    return `<div class="qty-row"><label>Nº ${n}${isFav?' <span class="fav-star">⭐</span>':''}</label><input type="number" id="qty-${n}" value="0" min="0" /></div>`;
+  }).join('');
+  // Cores novas reset
+  coresNovas=[];
+  document.getElementById('cores-novas-lista').innerHTML='';
+  // Selects
+  const opts='<option value="">— selecione —</option>'+[...new Set(produtos.map(p=>p.nome))].map(n=>`<option value="${n}">${n}</option>`).join('');
+  document.getElementById('cores-modelo-select').innerHTML=opts;
+  document.getElementById('edit-modelo-select').innerHTML=opts;
+  document.getElementById('cores-modelo-area').style.display='none';
+  document.getElementById('edit-cor-area').style.display='none';
+  document.getElementById('edit-estoque-area').style.display='none';
 }
 
 function switchCadTab(tab,el){
   document.querySelectorAll('.tab-bar .tab').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('cad-novo').style.display=tab==='novo'?'block':'none';
-  document.getElementById('cad-edit').style.display=tab==='edit'?'block':'none';
+  document.getElementById('cad-cores').style.display=tab==='cores'?'block':'none';
+  document.getElementById('cad-estoque').style.display=tab==='estoque'?'block':'none';
 }
 
-async function salvarProduto(){
+function adicionarCorNova(){
+  const idx=coresNovas.length;
+  coresNovas.push({nome:'',favorita:false});
+  const div=document.createElement('div');
+  div.className='card card-static';div.style.marginBottom='8px';
+  div.innerHTML=`<div style="display:flex;align-items:center;gap:8px;">
+    <input type="text" placeholder="Nome da cor" id="cor-nome-${idx}" style="flex:1;" oninput="coresNovas[${idx}].nome=this.value" />
+    <button class="btn-icon" onclick="removerCorNova(${idx},this.parentElement.parentElement)"><i class="ti ti-x"></i></button>
+  </div>
+  <label class="checkbox-row" style="margin-top:8px;"><input type="checkbox" id="cor-fav-${idx}" onchange="coresNovas[${idx}].favorita=this.checked" /> Cor favorita ⭐</label>`;
+  document.getElementById('cores-novas-lista').appendChild(div);
+}
+
+function removerCorNova(idx,el){coresNovas[idx]=null;el.remove();}
+
+async function salvarModelo(){
   const nome=document.getElementById('cad-nome').value.trim();
-  const cor=document.getElementById('cad-cor').value.trim();
   const preco=parseFloat(document.getElementById('cad-preco').value);
-  if(!nome||!cor||isNaN(preco)||preco<=0){showToast('Preencha todos os campos','error');return;}
+  const coresValidas=coresNovas.filter(c=>c&&c.nome.trim());
+  if(!nome||isNaN(preco)||preco<=0){showToast('Preencha nome e preço','error');return;}
+  if(!coresValidas.length){showToast('Adicione pelo menos uma cor','error');return;}
   const estoque={};
   TAMANHOS.forEach(n=>{const v=parseInt(document.getElementById('qty-'+n).value)||0;if(v>0)estoque[n]=v;});
-  const id='P'+String(produtos.length+1).padStart(3,'0');
-  produtos.push({id,nome,cor,preco,estoque});
-  document.getElementById('cad-nome').value='';
-  document.getElementById('cad-cor').value='';
-  document.getElementById('cad-preco').value='';
-  TAMANHOS.forEach(n=>document.getElementById('qty-'+n).value=0);
-  showToast('Modelo '+nome+' cadastrado!');
+  coresValidas.forEach(c=>{
+    const id='P'+String(produtos.length+1).padStart(3,'0');
+    produtos.push({id,nome,cor:c.nome.trim(),preco,estoque:{...estoque},favorita:c.favorita});
+  });
+  showToast('Modelo '+nome+' salvo!');
+  renderCadastro();
   await salvarProdutosSheet();
 }
 
-function carregarEdit(){
-  const id=document.getElementById('edit-select').value;
-  if(!id){document.getElementById('edit-fields').style.display='none';return;}
-  const p=produtos.find(x=>x.id===id);
-  document.getElementById('edit-preco').value=p.preco.toFixed(2);
-  document.getElementById('edit-qty-rows').innerHTML=TAMANHOS.map(n=>
-    `<div class="qty-row"><label>Nº ${n}</label><input type="number" id="eqty-${n}" value="${+p.estoque[n]||0}" min="0" /></div>`
-  ).join('');
-  document.getElementById('edit-fields').style.display='block';
+function carregarCoresModelo(){
+  const nome=document.getElementById('cores-modelo-select').value;
+  if(!nome){document.getElementById('cores-modelo-area').style.display='none';return;}
+  document.getElementById('cores-modelo-area').style.display='block';
+  document.getElementById('nova-cor-area').style.display='none';
+  const cores=getCoresByModelo(nome);
+  document.getElementById('cores-modelo-lista').innerHTML=cores.map(p=>`
+    <div class="edit-color-row">
+      <div class="edit-color-name">${p.cor}${p.favorita?' ⭐':''}</div>
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-sec);cursor:pointer;">
+        <input type="checkbox" ${p.favorita?'checked':''} onchange="toggleFavorita('${p.id}',this.checked)" style="width:auto;"> Favorita
+      </label>
+    </div>`).join('');
 }
 
-async function salvarEdit(){
-  const id=document.getElementById('edit-select').value;
+async function toggleFavorita(id,val){
+  const p=produtos.find(x=>x.id===id);if(!p)return;
+  p.favorita=val;
+  await salvarProdutosSheet();
+  showToast(val?'Marcada como favorita ⭐':'Favorita removida');
+}
+
+function adicionarCorExistente(){
+  document.getElementById('nova-cor-area').style.display='block';
+  document.getElementById('nova-cor-nome').value='';
+  document.getElementById('nova-cor-fav').checked=false;
+  const nome=document.getElementById('cores-modelo-select').value;
+  const modelo=produtos.find(p=>p.nome===nome);
+  const preco=modelo?modelo.preco:0;
+  document.getElementById('nova-cor-qtys').innerHTML=TAMANHOS.map(n=>{
+    const isFav=NUMS_FAV.includes(n);
+    return `<div class="qty-row"><label>Nº ${n}${isFav?' <span class="fav-star">⭐</span>':''}</label><input type="number" id="ncqty-${n}" value="0" min="0" /></div>`;
+  }).join('');
+}
+
+async function salvarNovaCorExistente(){
+  const nome=document.getElementById('cores-modelo-select').value;
+  const corNome=document.getElementById('nova-cor-nome').value.trim();
+  const fav=document.getElementById('nova-cor-fav').checked;
+  if(!corNome){showToast('Digite o nome da cor','error');return;}
+  const modelo=produtos.find(p=>p.nome===nome);
+  const preco=modelo?modelo.preco:0;
+  const estoque={};
+  TAMANHOS.forEach(n=>{const v=parseInt(document.getElementById('ncqty-'+n).value)||0;if(v>0)estoque[n]=v;});
+  const id='P'+String(produtos.length+1).padStart(3,'0');
+  produtos.push({id,nome,cor:corNome,preco,estoque,favorita:fav});
+  showToast('Cor '+corNome+' adicionada!');
+  carregarCoresModelo();
+  document.getElementById('nova-cor-area').style.display='none';
+  await salvarProdutosSheet();
+}
+
+function carregarEditModelo(){
+  const nome=document.getElementById('edit-modelo-select').value;
+  if(!nome){document.getElementById('edit-cor-area').style.display='none';return;}
+  document.getElementById('edit-cor-area').style.display='block';
+  document.getElementById('edit-estoque-area').style.display='none';
+  const cores=getCoresByModelo(nome);
+  document.getElementById('edit-cor-select').innerHTML='<option value="">— selecione —</option>'+cores.map(p=>`<option value="${p.id}">${p.cor}</option>`).join('');
+}
+
+function carregarEditEstoque(){
+  const id=document.getElementById('edit-cor-select').value;
+  if(!id){document.getElementById('edit-estoque-area').style.display='none';return;}
+  const p=produtos.find(x=>x.id===id);
+  document.getElementById('edit-preco').value=p.preco.toFixed(2);
+  document.getElementById('edit-qty-rows').innerHTML=TAMANHOS.map(n=>{
+    const isFav=NUMS_FAV.includes(n);
+    return `<div class="qty-row"><label>Nº ${n}${isFav?' <span class="fav-star">⭐</span>':''}</label><input type="number" id="eqty-${n}" value="${parseInt(p.estoque[n])||0}" min="0" /></div>`;
+  }).join('');
+  document.getElementById('edit-estoque-area').style.display='block';
+}
+
+async function salvarEditEstoque(){
+  const id=document.getElementById('edit-cor-select').value;
   const p=produtos.find(x=>x.id===id);
   const preco=parseFloat(document.getElementById('edit-preco').value);
   if(isNaN(preco)||preco<=0){showToast('Preço inválido','error');return;}
-  p.preco=preco;
+  // Atualiza preço em todas as cores do mesmo modelo
+  const nome=p.nome;
+  produtos.filter(x=>x.nome===nome).forEach(x=>x.preco=preco);
   TAMANHOS.forEach(n=>{p.estoque[n]=parseInt(document.getElementById('eqty-'+n).value)||0;});
   showToast('Estoque atualizado!');
   await salvarProdutosSheet();
 }
 
-async function excluirProduto(){
-  const id=document.getElementById('edit-select').value;if(!id)return;
-  if(!confirm('Excluir este modelo?'))return;
+async function excluirCor(){
+  const id=document.getElementById('edit-cor-select').value;
+  if(!confirm('Excluir esta cor?'))return;
   produtos=produtos.filter(x=>x.id!==id);
   renderCadastro();
-  showToast('Modelo excluído');
+  showToast('Cor excluída');
   await salvarProdutosSheet();
 }
 
-function renderEtiquetaSelect(){
-  const sel=document.getElementById('etiq-select');
-  sel.innerHTML='<option value="">— selecione —</option>'+produtos.map(p=>`<option value="${p.id}">${prodLabel(p)}</option>`).join('');
+// ===== ETIQUETAS =====
+function renderEtiquetaModelos(){
+  const nomes=[...new Set(produtos.map(p=>p.nome))];
+  document.getElementById('etiq-modelo-select').innerHTML='<option value="">— selecione —</option>'+nomes.map(n=>`<option value="${n}">${n}</option>`).join('');
+  document.getElementById('etiq-cores-area').style.display='none';
   document.getElementById('etiq-preview').style.display='none';
 }
 
-function gerarEtiqueta(){
-  const id=document.getElementById('etiq-select').value;
-  if(!id){document.getElementById('etiq-preview').style.display='none';return;}
-  const p=produtos.find(x=>x.id===id);
-  const disponiveis=Object.entries(p.estoque).filter(([,q])=>+q>0);
+function carregarEtiqCores(){
+  const nome=document.getElementById('etiq-modelo-select').value;
+  if(!nome){document.getElementById('etiq-cores-area').style.display='none';return;}
+  const cores=getCoresByModelo(nome).filter(p=>Object.values(p.estoque).some(q=>parseInt(q)>0));
+  document.getElementById('etiq-cores-chips').innerHTML=cores.map(p=>
+    `<span class="color-chip selected" id="chip-${p.id}" onclick="toggleChip('${p.id}')"><i class="ti ti-check"></i>${p.cor}</span>`
+  ).join('');
+  document.getElementById('etiq-cores-area').style.display='block';
+  document.getElementById('etiq-preview').style.display='none';
+}
+
+function toggleChip(id){
+  const chip=document.getElementById('chip-'+id);
+  chip.classList.toggle('selected');
+  const icon=chip.querySelector('i');
+  if(chip.classList.contains('selected')) icon.className='ti ti-check';
+  else icon.className='ti ti-minus';
+}
+
+function gerarEtiquetas(){
+  const nome=document.getElementById('etiq-modelo-select').value;
+  const cores=getCoresByModelo(nome);
+  const selecionadas=cores.filter(p=>document.getElementById('chip-'+p.id)?.classList.contains('selected'));
+  if(!selecionadas.length){showToast('Selecione ao menos uma cor','error');return;}
   const lista=document.getElementById('etiq-lista');
-  if(!disponiveis.length){
-    lista.innerHTML='<p style="font-size:13px;color:var(--text-muted)">Sem estoque para gerar etiquetas</p>';
-    document.getElementById('etiq-preview').style.display='block';return;
-  }
-  lista.innerHTML=disponiveis.map(([n])=>{
-    const code=p.id+'-'+n;
-    return `<div class="label-box">
-      <div class="label-name">${p.nome}</div>
-      <div class="label-detail">${p.cor} · Nº ${n}</div>
-      <div class="label-price">${fmtPreco(p.preco)}</div>
-      <canvas id="bc-${code.replace(/[^a-zA-Z0-9]/g,'-')}"></canvas>
-      <div class="label-code">${code}</div>
-    </div>`;
-  }).join('');
+  lista.innerHTML=selecionadas.flatMap(p=>
+    Object.entries(p.estoque).filter(([,q])=>parseInt(q)>0).map(([n])=>{
+      const code=p.id+'-'+n;
+      return `<div class="label-box">
+        <div class="label-name">${p.nome}</div>
+        <div class="label-detail">${p.cor} · Nº ${n}</div>
+        <div class="label-price">${fmtPreco(p.preco)}</div>
+        <canvas id="bc-${code.replace(/[^a-zA-Z0-9]/g,'-')}"></canvas>
+        <div class="label-code">${code}</div>
+      </div>`;
+    })
+  ).join('');
   document.getElementById('etiq-preview').style.display='block';
   setTimeout(()=>{
-    disponiveis.forEach(([n])=>{
-      const code=p.id+'-'+n;
-      const cid='bc-'+code.replace(/[^a-zA-Z0-9]/g,'-');
-      const canvas=document.getElementById(cid);
-      if(canvas&&typeof JsBarcode!=='undefined'){
-        try{JsBarcode(canvas,code,{format:'CODE128',width:1.8,height:44,displayValue:false,margin:4,background:'#ffffff',lineColor:'#000000'});}catch(e){}
-      }
+    selecionadas.forEach(p=>{
+      Object.entries(p.estoque).filter(([,q])=>parseInt(q)>0).forEach(([n])=>{
+        const code=p.id+'-'+n;
+        const cid='bc-'+code.replace(/[^a-zA-Z0-9]/g,'-');
+        const canvas=document.getElementById(cid);
+        if(canvas&&typeof JsBarcode!=='undefined'){
+          try{JsBarcode(canvas,code,{format:'CODE128',width:1.8,height:44,displayValue:false,margin:4,background:'#ffffff',lineColor:'#000000'});}catch(e){}
+        }
+      });
     });
   },150);
 }
 
 function imprimirEtiquetas(){
-  const id=document.getElementById('etiq-select').value;
-  const p=produtos.find(x=>x.id===id);
-  const disponiveis=Object.entries(p.estoque).filter(([,q])=>+q>0);
+  const nome=document.getElementById('etiq-modelo-select').value;
+  const cores=getCoresByModelo(nome).filter(p=>document.getElementById('chip-'+p.id)?.classList.contains('selected'));
   let etqs='';
-  disponiveis.forEach(([n])=>{
-    const code=p.id+'-'+n;
-    const cid='bc-'+code.replace(/[^a-zA-Z0-9]/g,'-');
-    const canvas=document.getElementById(cid);
-    const bcImg=canvas?canvas.toDataURL():'';
-    etqs+=`<div class="etiqueta"><div class="nome">${p.nome}</div><div class="detalhe">${p.cor} · Nº ${n}</div>
-      <div class="preco">${fmtPreco(p.preco)}</div>
-      ${bcImg?`<img src="${bcImg}" style="width:100%;max-height:44px;margin:4px 0;" />`:''}
-      <div class="code">${code}</div></div>`;
+  cores.forEach(p=>{
+    Object.entries(p.estoque).filter(([,q])=>parseInt(q)>0).forEach(([n])=>{
+      const code=p.id+'-'+n;
+      const cid='bc-'+code.replace(/[^a-zA-Z0-9]/g,'-');
+      const canvas=document.getElementById(cid);
+      const bcImg=canvas?canvas.toDataURL():'';
+      etqs+=`<div class="etiqueta"><div class="nome">${p.nome}</div><div class="detalhe">${p.cor} · Nº ${n}</div>
+        <div class="preco">${fmtPreco(p.preco)}</div>
+        ${bcImg?`<img src="${bcImg}" style="width:100%;max-height:44px;margin:4px 0;" />`:''}
+        <div class="code">${code}</div></div>`;
+    });
   });
   const w=window.open('','_blank');
   w.document.write(`<!DOCTYPE html><html><head><title>Etiquetas</title><style>
     body{font-family:Arial,sans-serif;margin:0;padding:12px;}
     .etiqueta{border:1px solid #ccc;border-radius:3px;padding:8px 12px;margin:4px;width:200px;display:inline-block;vertical-align:top;page-break-inside:avoid;}
-    .nome{font-size:12px;font-weight:bold;}.detalhe{font-size:10px;color:#555;}.preco{font-size:16px;font-weight:bold;margin-top:3px;}.code{font-size:9px;color:#777;letter-spacing:0.5px;}
+    .nome{font-size:12px;font-weight:bold;}.detalhe{font-size:10px;color:#555;}.preco{font-size:16px;font-weight:bold;margin-top:3px;}.code{font-size:9px;color:#777;}
     @media print{body{padding:0;}.etiqueta{margin:2px;}}
   </style></head><body>${etqs}</body></html>`);
   w.document.close();w.print();
