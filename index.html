@@ -829,13 +829,16 @@ function imprimirEtiquetas(){
   const nome=document.getElementById('etiq-modelo-select').value;
   const cores=getCoresByModelo(nome).filter(p=>document.getElementById('chip-'+p.id)?.classList.contains('selected'));
   let etqs='';
+  let etiqCount = 0;
+  let paginas = [''];
   cores.forEach(p=>{
     Object.entries(p.estoque).filter(([,q])=>parseInt(q)>0).forEach(([n])=>{
+      if(etiqCount > 0 && etiqCount % 30 === 0) paginas.push('');
       const code=p.id+'-'+n;
       const cid='bc-'+code.replace(/[^a-zA-Z0-9]/g,'-');
       const canvas=document.getElementById(cid);
       const bcImg=canvas?canvas.toDataURL():'';
-      etqs+=`<div class="etiqueta">
+      paginas[paginas.length-1]+=`<div class="etiqueta">
         <div class="info">
           <div class="nome">${p.nome}</div>
           <div class="detalhe">${p.cor} · Nº ${n}</div>
@@ -846,8 +849,10 @@ function imprimirEtiquetas(){
           <div class="code">${code}</div>
         </div>
       </div>`;
+      etiqCount++;
     });
   });
+  etqs = paginas.map(p=>`<div class="pagina"><div class="grid">${p}</div></div>`).join('');
   const w=window.open('','_blank');
   w.document.write(`<!DOCTYPE html><html><head><title>Etiquetas Laranja Nanica</title><style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -866,10 +871,11 @@ function imprimirEtiquetas(){
     @media print {
       @page { margin: 0; }
       body { margin: 0; }
-      .pagina { padding: 10mm 4.5mm; }
+      .pagina { padding: 10mm 4.5mm; page-break-after: always; }
+      .pagina:last-child { page-break-after: avoid; }
       .etiqueta { border: 0.3px solid #ccc; }
     }
-  </style></head><body><div class="pagina"><div class="grid">${etqs}</div></div></body></html>`);
+  </style></head><body>${etqs}</body></html>`);
   w.document.close();
   setTimeout(()=>w.print(), 500);
 }
