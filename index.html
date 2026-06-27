@@ -836,11 +836,15 @@ function imprimirEtiquetas(){
       const canvas=document.getElementById(cid);
       const bcImg=canvas?canvas.toDataURL():'';
       etqs+=`<div class="etiqueta">
-        <div class="nome">${p.nome}</div>
-        <div class="detalhe">${p.cor} · Nº ${n}</div>
-        <div class="preco">${fmtPreco(p.preco)}</div>
-        ${bcImg?`<img src="${bcImg}" class="barcode" />`:''}
-        <div class="code">${code}</div>
+        <div class="info">
+          <div class="nome">${p.nome}</div>
+          <div class="detalhe">${p.cor} · Nº ${n}</div>
+          <div class="preco">${fmtPreco(p.preco)}</div>
+        </div>
+        <div class="barcode-wrap">
+          ${bcImg?`<img src="${bcImg}" class="barcode" />`:''}
+          <div class="code">${code}</div>
+        </div>
       </div>`;
     });
   });
@@ -848,17 +852,19 @@ function imprimirEtiquetas(){
   w.document.write(`<!DOCTYPE html><html><head><title>Etiquetas Laranja Nanica</title><style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: Arial, sans-serif; background: white; }
-    .pagina { width: 210mm; margin: 0 auto; padding: 10.7mm 4.8mm; }
-    .grid { display: grid; grid-template-columns: repeat(3, 66.7mm); grid-template-rows: repeat(10, 25.4mm); gap: 0; }
-    .etiqueta { width: 66.7mm; height: 25.4mm; padding: 2mm 3mm; display: flex; flex-direction: column; justify-content: space-between; border: 0.3px solid #ddd; overflow: hidden; }
-    .nome { font-size: 7pt; font-weight: bold; color: #000; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .detalhe { font-size: 6.5pt; color: #444; }
-    .preco { font-size: 11pt; font-weight: bold; color: #000; }
-    .barcode { width: 100%; height: 7mm; object-fit: contain; display: block; }
-    .code { font-size: 5.5pt; color: #777; text-align: center; letter-spacing: 0.5px; }
+    .pagina { width: 210mm; margin: 0 auto; padding: 13mm 5mm; }
+    .grid { display: grid; grid-template-columns: repeat(3, 66.7mm); grid-template-rows: repeat(10, 25.4mm); column-gap: 2mm; row-gap: 0; }
+    .etiqueta { width: 66.7mm; height: 25.4mm; padding: 2mm 3mm; display: flex; flex-direction: row; align-items: center; gap: 3mm; border: 0.3px solid #ddd; overflow: hidden; }
+    .info { flex: 1; min-width: 0; }
+    .nome { font-size: 6.5pt; font-weight: bold; color: #000; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .detalhe { font-size: 6pt; color: #444; margin-top: 0.5mm; }
+    .preco { font-size: 10pt; font-weight: bold; color: #000; margin-top: 0.5mm; }
+    .barcode-wrap { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+    .barcode { height: 14mm; width: 28mm; object-fit: contain; display: block; }
+    .code { font-size: 5pt; color: #777; text-align: center; letter-spacing: 0.5px; margin-top: 0.5mm; }
     @media print {
       body { margin: 0; }
-      .pagina { padding: 10.7mm 4.8mm; }
+      .pagina { padding: 13mm 5mm; }
       .etiqueta { border: 0.3px solid #ccc; }
     }
   </style></head><body><div class="pagina"><div class="grid">${etqs}</div></div></body></html>`);
