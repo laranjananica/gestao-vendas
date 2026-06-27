@@ -848,17 +848,17 @@ function imprimirEtiquetas(){
   w.document.write(`<!DOCTYPE html><html><head><title>Etiquetas Laranja Nanica</title><style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: Arial, sans-serif; background: white; }
-    .pagina { width: 210mm; margin: 0 auto; padding: 13mm 4.75mm; }
-    .grid { display: grid; grid-template-columns: repeat(3, 63.5mm); grid-template-rows: repeat(7, 38.1mm); gap: 0; }
-    .etiqueta { width: 63.5mm; height: 38.1mm; padding: 3mm 3mm 2mm; display: flex; flex-direction: column; justify-content: space-between; border: 0.3px solid #ddd; overflow: hidden; }
-    .nome { font-size: 8pt; font-weight: bold; color: #000; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .detalhe { font-size: 7pt; color: #444; margin-top: 1mm; }
-    .preco { font-size: 13pt; font-weight: bold; color: #000; margin-top: 1mm; }
-    .barcode { width: 100%; height: 10mm; object-fit: contain; display: block; margin-top: 1mm; }
-    .code { font-size: 6pt; color: #777; text-align: center; margin-top: 1mm; letter-spacing: 0.5px; }
+    .pagina { width: 210mm; margin: 0 auto; padding: 10.7mm 4.8mm; }
+    .grid { display: grid; grid-template-columns: repeat(3, 66.7mm); grid-template-rows: repeat(10, 25.4mm); gap: 0; }
+    .etiqueta { width: 66.7mm; height: 25.4mm; padding: 2mm 3mm; display: flex; flex-direction: column; justify-content: space-between; border: 0.3px solid #ddd; overflow: hidden; }
+    .nome { font-size: 7pt; font-weight: bold; color: #000; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .detalhe { font-size: 6.5pt; color: #444; }
+    .preco { font-size: 11pt; font-weight: bold; color: #000; }
+    .barcode { width: 100%; height: 7mm; object-fit: contain; display: block; }
+    .code { font-size: 5.5pt; color: #777; text-align: center; letter-spacing: 0.5px; }
     @media print {
       body { margin: 0; }
-      .pagina { padding: 13mm 4.75mm; }
+      .pagina { padding: 10.7mm 4.8mm; }
       .etiqueta { border: 0.3px solid #ccc; }
     }
   </style></head><body><div class="pagina"><div class="grid">${etqs}</div></div></body></html>`);
